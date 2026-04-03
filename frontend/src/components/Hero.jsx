@@ -5,7 +5,7 @@ const Hero = () => {
   return (
     <section className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-16">
       <div className="max-w-7xl mx-auto px-4">
-        <div className="grid md:grid-cols-2 gap-8 items-center">
+        <div className="grid md:grid-cols-2 gap-8 items-center ">
           <div>
             <h1 className="text-4xl md:text-6xl font-bold mb-4">
               Latest Electronics at Best Prices
@@ -26,11 +26,13 @@ const Hero = () => {
               </Button>
             </div>
           </div>
-          <div className="flex justify-center overflow-hidden">
+          <div className="relative">
             <img
               src="/ekart-hero1.png"
               alt="hero"
-              className="max-w-full h-auto"
+              width={500}
+              height={400}
+              className="rounded-lg shadow-2xl"
             />
           </div>
         </div>

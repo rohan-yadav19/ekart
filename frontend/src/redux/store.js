@@ -25,7 +25,7 @@ const storage = {
 };
 
 const persistConfig = {
-  key: "root",
+  key: "Ekart",
   version: 1,
   storage,
 };

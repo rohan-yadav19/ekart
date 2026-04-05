@@ -1,5 +1,5 @@
 import React from "react";
-import { Button } from "@/components/ui/button";
+
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 import Home from "@/pages/Home";
@@ -9,6 +9,7 @@ import Navbar from "./components/Navbar";
 import Verify from "./pages/Verify";
 import VerifyEmail from "./pages/VerifyEmail";
 import Footer from "./components/Footer";
+import Profile from "./pages/Profile";
 
 const router = createBrowserRouter([
   {
@@ -50,6 +51,15 @@ const router = createBrowserRouter([
     element: (
       <>
         <VerifyEmail />
+      </>
+    ),
+  },
+  {
+    path: "/profile/:userId",
+    element: (
+      <>
+        <Navbar />
+        <Profile />
       </>
     ),
   },

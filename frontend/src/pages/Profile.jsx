@@ -15,6 +15,10 @@ import { useParams } from "react-router-dom";
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import userlogo from "../assets/user.jpg";
+import { toast } from "sonner";
+import axios from "axios";
+import { useDispatch } from "react-redux";
+import { setUser } from "@/redux/userSlice";
 const Profile = () => {
   const { user } = useSelector((store) => store.user);
   const params = useParams();
@@ -31,6 +35,7 @@ const Profile = () => {
     role: user?.role,
   });
   const [file, setFile] = useState(null);
+  const dispatch = useDispatch();
   const handleChange = (e) => {
     setUpdateUser({ ...updateUser, [e.target.name]: e.target.value });
   };
@@ -44,7 +49,39 @@ const Profile = () => {
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(updateUser);
+    const accessToken = localStorage.getItem("accessToken");
+    try {
+      //use formData for text and file
+      const formData = new FormData();
+      formData.append("firstName", updateUser.firstName);
+      formData.append("lastName", updateUser.lastName);
+      formData.append("email", updateUser.email);
+      formData.append("phoneNo", updateUser.phoneNo);
+      formData.append("address", updateUser.address);
+      formData.append("city", updateUser.city);
+      formData.append("zipCode", updateUser.zipCode);
+      formData.append("role", updateUser.role);
+      if (file) {
+        formData.append("file", file); //image file for backend multer
+      }
+      const res = await axios.put(
+        `http://localhost:8000/api/v1/user/update/${userId}`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "multipart/form-data",
+          },
+        },
+      );
+      if (res.data.success) {
+        toast.success(res.data.message);
+        dispatch(setUser(res.data.user));
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error("Failed to update profile. Please try again.");
+    }
   };
 
   return (
@@ -79,7 +116,10 @@ const Profile = () => {
                   </Label>
                 </div>
                 {/* profile form */}
-                <form className="space-y-4 shadow-lg p-5 rounded-lg bg-white">
+                <form
+                  onSubmit={handleSubmit}
+                  className="space-y-4 shadow-lg p-5 rounded-lg bg-white"
+                >
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <Label className="block text-sm font-medium">
@@ -89,6 +129,8 @@ const Profile = () => {
                         type="text"
                         name="firstName"
                         placeholder="john"
+                        value={updateUser.firstName}
+                        onChange={handleChange}
                         className="w-full border rounded-lg px-3 py-2 mt-1"
                       />
                     </div>
@@ -100,6 +142,8 @@ const Profile = () => {
                         type="text"
                         name="lastName"
                         placeholder="doe"
+                        value={updateUser.lastName}
+                        onChange={handleChange}
                         className="w-full border rounded-lg px-3 py-2 mt-1"
                       />
                     </div>
@@ -110,6 +154,8 @@ const Profile = () => {
                       type="email"
                       name="email"
                       disabled
+                      value={updateUser.email}
+                      onChange={handleChange}
                       className="w-full border rounded-lg px-3 py-2 mt-1 bg-gray-100 cursor-not-allowed"
                     />
                   </div>
@@ -121,6 +167,8 @@ const Profile = () => {
                       type="text"
                       name="phoneNo"
                       placeholder="Enter your Contact Number"
+                      value={updateUser.phoneNo}
+                      onChange={handleChange}
                       className="w-full border rounded-lg px-3 py-2 mt-1"
                     />
                   </div>
@@ -129,30 +177,39 @@ const Profile = () => {
                     <Input
                       type="text"
                       name="address"
+                      value={updateUser.address}
+                      onChange={handleChange}
                       placeholder="Enter your Address"
                       className="w-full border rounded-lg px-3 py-2 mt-1"
                     />
                   </div>
-                  <div>
-                    <Label className="block text-sm font-medium">City</Label>
-                    <Input
-                      type="text"
-                      name="city"
-                      placeholder="Enter your City"
-                      className="w-full border rounded-lg px-3 py-2 mt-1"
-                    />
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label className="block text-sm font-medium">City</Label>
+                      <Input
+                        type="text"
+                        name="city"
+                        value={updateUser.city}
+                        onChange={handleChange}
+                        placeholder="Enter your City"
+                        className="w-full border rounded-lg px-3 py-2 mt-1"
+                      />
+                    </div>
+                    <div>
+                      <Label className="block text-sm font-medium">
+                        Zip Code
+                      </Label>
+                      <Input
+                        type="text"
+                        name="zipCode"
+                        value={updateUser.zipCode}
+                        onChange={handleChange}
+                        placeholder="Enter your ZipCode"
+                        className="w-full border rounded-lg px-3 py-2 mt-1"
+                      />
+                    </div>
                   </div>
-                  <div>
-                    <Label className="block text-sm font-medium">
-                      Zip Code
-                    </Label>
-                    <Input
-                      type="text"
-                      name="zipCode"
-                      placeholder="Enter your ZipCode"
-                      className="w-full border rounded-lg px-3 py-2 mt-1"
-                    />
-                  </div>
+
                   <Button
                     type="submit"
                     className="w-full mt-4 bg-pink-600 hover:bg-pink-700 text-white font-semibold py-2 rounded-lg"

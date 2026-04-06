@@ -2,6 +2,7 @@ import express from "express";
 import dotenv from "dotenv/config";
 import connectDB from "./database/db.js";
 import userRoute from "./routes/userRoute.js";
+import productRoute from "./routes/productRoute.js";
 import cors from "cors";
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -13,6 +14,7 @@ app.use(
   }),
 );
 app.use("/api/v1/user", userRoute);
+app.use("/api/v1/product", productRoute);
 
 app.listen(PORT, () => {
   connectDB();

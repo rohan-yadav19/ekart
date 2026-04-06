@@ -5,6 +5,7 @@ import { verifyEmail } from "../emailVerify/verifyEmail.js";
 import { Session } from "../models/sessionModel.js";
 import { sendOTPMail } from "../emailVerify/sendOTPMail.js";
 import cloudinary from "../utils/cloudinary.js";
+import { v2 as cloudinaryV2 } from "cloudinary";
 export const register = async (req, res) => {
   try {
     const { firstName, lastName, email, password } = req.body;
@@ -400,7 +401,7 @@ export const updateUser = async (req, res) => {
     user.city = city || user.city;
     user.zipCode = zipCode || user.zipCode;
     user.phoneNo = phoneNo || user.phoneNo;
-    user.role = role;
+    user.role = role || user.role;
     user.profilePic = profilePicUrl;
     user.profilePicPublicId = profilePicPublicId;
     const updatedUser = await user.save();

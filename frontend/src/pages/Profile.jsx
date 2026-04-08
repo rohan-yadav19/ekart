@@ -62,7 +62,7 @@ const Profile = () => {
       formData.append("zipCode", updateUser.zipCode);
       formData.append("role", updateUser.role);
       if (file) {
-        formData.append("file", file); //image file for backend multer
+        formData.append("files", file); //image file for backend multer
       }
       const res = await axios.put(
         `http://localhost:8000/api/v1/user/update/${userId}`,

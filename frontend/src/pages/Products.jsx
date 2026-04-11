@@ -12,10 +12,18 @@ import {
 import ProductCard from "@/components/ProductCard";
 import { toast } from "sonner";
 import axios from "axios";
+import { useSelector, useDispatch } from "react-redux";
+import { setProducts } from "@/redux/productSlice.js";
 
 function Products() {
+  const { products } = useSelector((store) => store.product);
   const [allProducts, setAllProducts] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [search, setSearch] = useState("");
+  const [category, setCategory] = useState("All");
+  const [brand, setBrand] = useState("All");
+  const [priceRange, setPriceRange] = useState([0, 999999]);
+  const dispatch = useDispatch();
   const getAllProducts = async () => {
     try {
       setLoading(true);
@@ -24,6 +32,7 @@ function Products() {
       );
       if (res.data.success) {
         setAllProducts(res.data.products);
+        dispatch(setProducts(res.data.products));
       }
     } catch (error) {
       console.log(error);
@@ -41,7 +50,17 @@ function Products() {
     <div className="pt-35 pb-10">
       <div className="max-w-7xl mx-auto flex gap-7">
         {/* slide bar */}
-        <FilterSlidebar />
+        <FilterSlidebar
+          search={search}
+          setSearch={setSearch}
+          category={category}
+          setCategory={setCategory}
+          brand={brand}
+          setBrand={setBrand}
+          allProducts={allProducts}
+          priceRange={priceRange}
+          setPriceRange={setPriceRange}
+        />
         {/* main product section */}
         <div className="flex flex-col flex-1">
           <div className="flex justify-end mb-4">

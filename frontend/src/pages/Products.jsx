@@ -23,6 +23,7 @@ function Products() {
   const [category, setCategory] = useState("All");
   const [brand, setBrand] = useState("All");
   const [priceRange, setPriceRange] = useState([0, 999999]);
+  const [sortOrder, setSortOrder] = useState("");
   const dispatch = useDispatch();
   const getAllProducts = async () => {
     try {
@@ -41,7 +42,39 @@ function Products() {
       setLoading(false);
     }
   };
+  useEffect(() => {
+    let filtered = [...allProducts];
 
+    if (search.trim() !== "") {
+      filtered = filtered.filter((p) =>
+        p.productName?.toLowerCase().includes(search.toLowerCase()),
+      );
+    }
+
+    if (category.toLowerCase() !== "all") {
+      filtered = filtered.filter(
+        (p) => p.category?.toLowerCase() === category.toLowerCase(),
+      );
+    }
+
+    if (brand.toLowerCase() !== "all") {
+      filtered = filtered.filter(
+        (p) => p.brand?.toLowerCase() === brand.toLowerCase(),
+      );
+    }
+
+    filtered = filtered.filter(
+      (p) => p.productPrice >= priceRange[0] && p.productPrice <= priceRange[1],
+    );
+
+    if (sortOrder === "lowtoHigh") {
+      filtered.sort((a, b) => a.productPrice - b.productPrice);
+    } else if (sortOrder === "hightoLow") {
+      filtered.sort((a, b) => b.productPrice - a.productPrice);
+    }
+
+    dispatch(setProducts(filtered));
+  }, [search, category, brand, priceRange, sortOrder, allProducts]);
   useEffect(() => {
     getAllProducts();
   }, []);
@@ -64,7 +97,7 @@ function Products() {
         {/* main product section */}
         <div className="flex flex-col flex-1">
           <div className="flex justify-end mb-4">
-            <Select>
+            <Select onValueChange={(value) => setSortOrder(value)}>
               <SelectTrigger className="w-[200px]">
                 <SelectValue placeholder="Sort by Price" />
               </SelectTrigger>
@@ -78,7 +111,7 @@ function Products() {
           </div>
           {/* product grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-7">
-            {allProducts.map((product) => {
+            {products.map((product) => {
               return (
                 <ProductCard
                   key={product._id}

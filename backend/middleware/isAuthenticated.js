@@ -2,7 +2,6 @@ import User from "../models/userModel.js";
 import jwt from "jsonwebtoken";
 
 export const isAuthenticated = async (req, res, next) => {
-  console.log("isAuthenticated middleware called");
   try {
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -45,7 +44,6 @@ export const isAuthenticated = async (req, res, next) => {
   }
 };
 export const isAdmin = (req, res, next) => {
-  console.log("isAdmin middleware called");
   if (req.user && req.user.role === "admin") {
     console.log("Admin access granted");
     next();

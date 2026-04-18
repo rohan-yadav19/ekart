@@ -1,12 +1,15 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import React from "react";
-import { useSelector } from "react-redux";
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import userLogo from "../assets/user.jpg";
 import { Button } from "@/components/ui/button";
 import { ShoppingCart, Trash2 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
+import { setCart } from "@/redux/productSlice";
+import { toast } from "sonner";
 
 const Cart = () => {
   const { cart } = useSelector((store) => store.product);
@@ -16,7 +19,63 @@ const Cart = () => {
   const shipping = subtotal > 299 ? 0 : 10;
   const tax = subtotal * 0.05; //5% tax
   const total = subtotal + shipping + tax;
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const API = "http://localhost:8000/api/v1/cart";
+  const accessToken = localStorage.getItem("accessToken");
 
+  const loadCart = async () => {
+    try {
+      const res = await axios.get(API, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+      if (res.data.success) {
+        dispatch(setCart(res.data.cart));
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const handleUpdateQuantity = async (productId, type) => {
+    try {
+      const res = await axios.put(
+        `${API}/update`,
+        { productId, type },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        },
+      );
+      if (res.data.success) {
+        dispatch(setCart(res.data.cart));
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const handleRemove = async (productId) => {
+    try {
+      const res = await axios.delete(`${API}/remove`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+        data: { productId },
+      });
+      if (res.data.success) {
+        dispatch(setCart(res.data.cart));
+        toast.success("Product remove from cart");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    loadCart();
+  }, [dispatch]);
   return (
     <div className="pt-35 bg-gray-50 min-h-screen">
       {cart?.items?.length > 0 ? (
@@ -46,14 +105,37 @@ const Cart = () => {
                         </div>
                       </div>
                       <div className="flex gap-5 items-center">
-                        <Button variant="outline">-</Button>
-                        <span>1</span>
-                        <Button variant="outline">+</Button>
+                        <Button
+                          onClick={() =>
+                            handleUpdateQuantity(
+                              product.productId._id,
+                              "decrease",
+                            )
+                          }
+                          variant="outline"
+                        >
+                          -
+                        </Button>
+                        <span>{product.quantity}</span>
+                        <Button
+                          onClick={() =>
+                            handleUpdateQuantity(
+                              product.productId._id,
+                              "increase",
+                            )
+                          }
+                          variant="outline"
+                        >
+                          +
+                        </Button>
                       </div>
                       <p>
                         ₹{product?.productId?.productPrice * product?.quantity}
                       </p>
-                      <p className="flex text-red-500 items-center gap-1 cursor-pointer">
+                      <p
+                        onClick={() => handleRemove(product?.productId?._id)}
+                        className="flex text-red-500 items-center gap-1 cursor-pointer"
+                      >
                         <Trash2 className="w-4 h-4" />
                         Remove
                       </p>
@@ -118,7 +200,10 @@ const Cart = () => {
           <p className="mt-2 text-gray-600">
             Looks like you haven't added anything to your cart yet
           </p>
-          <Button className="mt-6 bg-pink-600 text-white hover:bg-pink-700">
+          <Button
+            onClick={() => navigate("/products")}
+            className="mt-6 cursor-pointer bg-pink-600 text-white py-3 px-6 hover:bg-pink-700"
+          >
             Start Shopping
           </Button>
         </div>

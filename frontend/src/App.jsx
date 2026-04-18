@@ -12,6 +12,14 @@ import Footer from "./components/Footer";
 import Profile from "./pages/Profile";
 import Products from "./pages/Products";
 import Cart from "./pages/Cart";
+import Dashboard from "./pages/Dashboard";
+import Adminsales from "./pages/admin/Adminsales";
+import AddProduct from "./pages/admin/AddProduct";
+import AdminProduct from "./pages/admin/AdminProduct";
+import AdminOrders from "./pages/admin/AdminOrders";
+import ShowUserOrders from "./pages/admin/ShowUserOrders";
+import AdminUsers from "./pages/admin/AdminUsers";
+import UserInfo from "./pages/admin/UserInfo";
 
 const router = createBrowserRouter([
   {
@@ -82,6 +90,40 @@ const router = createBrowserRouter([
         <Cart />
       </>
     ),
+  },
+  {
+    path: "/dashboard",
+    element: <Dashboard />,
+    children: [
+      {
+        path: "sales",
+        element: <Adminsales />,
+      },
+      {
+        path: "add-product",
+        element: <AddProduct />,
+      },
+      {
+        path: "products",
+        element: <AdminProduct />,
+      },
+      {
+        path: "orders",
+        element: <AdminOrders />,
+      },
+      {
+        path: "users/orders/:userId",
+        element: <ShowUserOrders />,
+      },
+      {
+        path: "users",
+        element: <AdminUsers />,
+      },
+      {
+        path: "users/:id",
+        element: <UserInfo />,
+      },
+    ],
   },
 ]);
 

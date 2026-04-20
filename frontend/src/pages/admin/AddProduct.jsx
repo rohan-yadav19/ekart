@@ -14,13 +14,14 @@ import { Button } from "@/components/ui/button";
 import React, { useState } from "react";
 import { toast } from "sonner";
 import axios from "axios";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setProducts } from "@/redux/productSlice";
 import { Loader2 } from "lucide-react";
 
 const AddProduct = () => {
   const accessToken = localStorage.getItem("accessToken");
   const dispatch = useDispatch();
+  const { products } = useSelector((store) => store.product);
   const [loading, setLoading] = useState(false);
   const [productData, setProductData] = useState({
     productName: "",
@@ -149,7 +150,7 @@ const AddProduct = () => {
             <Button
               disabled={loading}
               onClick={submitHandler}
-              className="w-full bg-pink-600 cursor-pointer"
+              className="w-full mt-3 bg-pink-600 cursor-pointer"
               type="submit"
             >
               {loading ? (

@@ -6,6 +6,21 @@ import { Card, CardContent } from "./ui/card";
 import { X } from "lucide-react";
 
 const ImageUpload = ({ productData, setProductData }) => {
+  const handleFiles = (e) => {
+    const files = Array.from(e.target.files || []);
+    if (files.length) {
+      setProductData((prev) => ({
+        ...prev,
+        productImg: [...prev.productImg, ...files],
+      }));
+    }
+  };
+  const removeImage = (index) => {
+    setProductData((prev) => {
+      const updatedImages = prev.productImg.filter((_, i) => i !== index);
+      return { ...prev, productImg: updatedImages };
+    });
+  };
   return (
     <div className="grid gap-2">
       <Label>Product Images</Label>
@@ -15,6 +30,7 @@ const ImageUpload = ({ productData, setProductData }) => {
         className="hidden"
         accept="image/*"
         multiple
+        onChange={handleFiles}
       />
       <Button variant="outline">
         <label htmlFor="file-upload" className="cursor-pointer">
@@ -48,7 +64,10 @@ const ImageUpload = ({ productData, setProductData }) => {
                     className="w-full h-32 object-cover rounded-md"
                   />
                   {/* remove button */}
-                  <button className="absolute top-1 rigth-1 bg-black/50 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition">
+                  <button
+                    onClick={() => removeImage(idx)}
+                    className="absolute top-1 rigth-1 bg-black/50 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition"
+                  >
                     <X size={14} />
                   </button>
                 </CardContent>

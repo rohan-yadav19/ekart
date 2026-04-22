@@ -45,7 +45,6 @@ export const isAuthenticated = async (req, res, next) => {
 };
 export const isAdmin = (req, res, next) => {
   if (req.user && req.user.role === "admin") {
-    console.log("Admin access granted");
     next();
   } else {
     console.log("Access denied. Admins only.");

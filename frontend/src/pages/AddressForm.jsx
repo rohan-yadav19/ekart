@@ -6,10 +6,15 @@ import { Separator } from "@/components/ui/separator";
 import {
   addAddress,
   deleteAddress,
+  setCart,
   setSelectedAddress,
 } from "@/redux/productSlice";
+import axios from "axios";
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import Products from "./Products";
+import { toast } from "sonner";
+import { Navigate, useNavigate } from "react-router-dom";
 
 const AddressForm = () => {
   const [formData, setFormData] = useState({
@@ -29,6 +34,7 @@ const AddressForm = () => {
     addresses?.length > 0 ? false : true,
   );
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -40,6 +46,105 @@ const AddressForm = () => {
   const shipping = subtotal > 50 ? 0 : 10;
   const tax = parseFloat((subtotal * 0.05).toFixed(2));
   const total = subtotal + shipping + tax;
+
+  const handlePayment = async () => {
+    const accessToken = localStorage.getItem("accessToken");
+    console.log(import.meta.env.VITE_URL);
+
+    try {
+      const { data } = await axios.post(
+        `${import.meta.env.VITE_URL}/api/v1/order/create-order`,
+        {
+          products: cart?.items?.map((item) => ({
+            productId: item.productId._id,
+            quantity: item.quantity,
+          })),
+          tax,
+          shipping,
+          amount: total,
+          currency: "INR",
+        },
+        {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        },
+      );
+
+      if (!data.success) return toast.error("Something went wrong");
+      console.log("Razorpay data:", data);
+
+      const options = {
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+        amount: data.order.amount,
+        currency: data.order.currency,
+        order_id: data.order.id, // Order ID from backend
+        name: "Ekart",
+        description: "Order Payment",
+        handler: async function (response) {
+          try {
+            const verifyRes = await axios.post(
+              `${import.meta.env.VITE_URL}/api/v1/order/verify-payment`,
+              response,
+              {
+                headers: { Authorization: `Bearer ${accessToken}` },
+              },
+            );
+            if (verifyRes.data.success) {
+              toast.success("✅ Payment Successfull!");
+              dispatch(setCart({ items: [], totalPrice: 0 }));
+              navigate("/order-success");
+            } else {
+              toast.error("❌ Payment Verification failed");
+            }
+          } catch (error) {
+            toast.error("Error verifying payment");
+          }
+        },
+        modal: {
+          ondismiss: async function () {
+            //Handle user closing the popup
+            await axios.post(
+              `${import.meta.env.VITE_URL}/api/v1/order/verify-payment`,
+              {
+                razorpay_order_id: data.order.id,
+                paymentFailed: true,
+              },
+              {
+                headers: { Authorization: `Bearer ${accessToken}` },
+              },
+            );
+            toast.error("Payment Cancelled or Failed");
+          },
+        },
+        prefill: {
+          name: formData.fullName,
+          email: formData.email,
+          contact: formData.phone,
+        },
+        theme: { color: "#F472B6" },
+      };
+
+      const rzp = new window.Razorpay(options);
+
+      //Listen for payment failures
+      rzp.on("Payment failed", async function (response) {
+        await axios.post(
+          `${import.meta.env.VITE_URL}/api/v1/order/verify-payment`,
+          {
+            razorpay_order_id: data.order.id,
+            paymentFailed: true,
+          },
+          {
+            headers: { Authorization: `Bearer ${accessToken}` },
+          },
+        );
+        toast.error("Payment failed.Please try again");
+      });
+      rzp.open();
+    } catch (error) {
+      console.error(error);
+      toast.error("Something went wrong while processing payment");
+    }
+  };
   return (
     <div className="max-w-7xl mx-auto grid place-items-center p-10">
       <div className="grid grid-cols-2 items-start gap-20 mt-10 max-w-7xl mx-auto">
@@ -177,6 +282,7 @@ const AddressForm = () => {
               </Button>
               <Button
                 disabled={selectedAddress === null}
+                onClick={handlePayment}
                 className="w-full bg-pink-600"
               >
                 Proceed To Checkout

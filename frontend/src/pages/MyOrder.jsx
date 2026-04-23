@@ -1,15 +1,15 @@
 import OrderCard from "@/components/OrderCard";
-import axios from "axios";
-import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
 
-const ShowUserOrders = () => {
-  const params = useParams();
+import axios from "axios";
+
+import React, { useEffect, useState } from "react";
+
+const MyOrder = () => {
   const [userOrder, setUserOrder] = useState([]);
   const getUserOrders = async () => {
     const accessToken = localStorage.getItem("accessToken");
     const res = await axios.get(
-      `${import.meta.env.VITE_URL}/api/v1/order/user-order/${params.userId}`,
+      `${import.meta.env.VITE_URL}/api/v1/order/myorder`,
       {
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -24,10 +24,10 @@ const ShowUserOrders = () => {
     getUserOrders();
   }, []);
   return (
-    <div className="pl-[350px] py-20 mt-30">
+    <>
       <OrderCard userOrder={userOrder} />
-    </div>
+    </>
   );
 };
 
-export default ShowUserOrders;
+export default MyOrder;

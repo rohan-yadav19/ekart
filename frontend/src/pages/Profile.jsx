@@ -19,6 +19,7 @@ import { toast } from "sonner";
 import axios from "axios";
 import { useDispatch } from "react-redux";
 import { setUser } from "@/redux/userSlice";
+import MyOrder from "./MyOrder";
 const Profile = () => {
   const { user } = useSelector((store) => store.user);
   const params = useParams();
@@ -222,28 +223,7 @@ const Profile = () => {
           </div>
         </TabsContent>
         <TabsContent value="orders">
-          <Card>
-            <CardHeader>
-              <CardTitle>Password</CardTitle>
-              <CardDescription>
-                Change your password here. After saving, you&apos;ll be logged
-                out.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="grid gap-6">
-              <div className="grid gap-3">
-                <Label htmlFor="tabs-demo-current">Current Password</Label>
-                <Input id="tabs-demo-current" type="password" />
-              </div>
-              <div className="grid gap-3">
-                <Label htmlFor="tabs-demo-new">New Password</Label>
-                <Input id="tabs-demo-new" type="password" />
-              </div>
-            </CardContent>
-            <CardFooter>
-              <Button>Save password</Button>
-            </CardFooter>
-          </Card>
+          <MyOrder />
         </TabsContent>
       </Tabs>
     </div>

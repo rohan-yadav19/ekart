@@ -63,8 +63,8 @@ const AdminOrders = () => {
                   </td>
                   <td className="px-4 py-2 border">
                     {order.products.map((p, idx) => (
-                      <div key={idx} className="text-sm">
-                        {p.productName} x {p.quantity}
+                      <div key={idx} className="text-sm line-clamp-1">
+                        {p.productId?.productName} x {p.quantity}
                       </div>
                     ))}
                   </td>

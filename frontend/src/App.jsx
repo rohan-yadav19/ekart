@@ -24,6 +24,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import SingleProduct from "./pages/SingleProduct";
 import AddressForm from "./pages/AddressForm";
 import OrderSuccess from "./pages/OrderSuccess";
+import MyOrder from "./pages/MyOrder";
 
 const router = createBrowserRouter([
   {
@@ -127,6 +128,10 @@ const router = createBrowserRouter([
         </ProtectedRoute>
       </>
     ),
+  },
+  {
+    path: "order",
+    element: <MyOrder />,
   },
   {
     path: "/dashboard",

@@ -68,10 +68,8 @@ const Login = () => {
     <div className="flex justify-center items-center min-h-screen bg-pink-100">
       <Card className="w-full max-w-sm">
         <CardHeader>
-          <CardTitle>Create your account</CardTitle>
-          <CardDescription>
-            Enter given details below to create your account
-          </CardDescription>
+          <CardTitle>Login </CardTitle>
+          <CardDescription>Enter given details to login</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex flex-col gap-3">

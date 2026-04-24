@@ -49,7 +49,7 @@ const AddressForm = () => {
 
   const handlePayment = async () => {
     const accessToken = localStorage.getItem("accessToken");
-    console.log(import.meta.env.VITE_URL);
+    
 
     try {
       const { data } = await axios.post(

@@ -28,7 +28,7 @@ const OrderSuccess = () => {
             Continue Shopping
           </button>
           <button
-            onClick={() => navigate("/orders")}
+            onClick={() => navigate("/order")}
             className="w-full border border-pink-600 text-pink-600 py-3 rounded-xl hover:bg-pink-50 transition"
           >
             View My Orders
